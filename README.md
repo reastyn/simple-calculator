@@ -1,12 +1,12 @@
 # Simple calculator
 
 Implementation of simple calculator in Rust using simple grammar
-
+```
 A -> E END
 E -> T + T | T - T
 T -> F * F | F / F
 F -> NUMBER
-
+```
 ## Usage
 
 `cargo run <<< "14 / 3"`
