@@ -31,7 +31,6 @@ fn lex(user_input: &str) -> Result<Vec<Lexer>, String> {
     for char in user_input.chars() {
         match char {
             '0'..='9' | '.' => {
-                println!("{} is a number", char);
                 if last_space && number.len() > 0 {
                     return Err("Unexpected space".to_string());
                 }
