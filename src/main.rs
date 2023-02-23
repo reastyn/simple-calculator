@@ -126,17 +126,22 @@ fn parse(lexer_vec: &mut Peekable<Iter<Lexer>>) -> Result<Operation, String> {
     }
 }
 
-fn execute(operation: Operation) -> f64 {
+fn execute(operation: Operation) -> Result<f64, String> {
     match operation {
-        Operation::Number(num) => num,
+        Operation::Number(num) => Ok(num),
         Operation::Binary(op, left, right) => {
-            let left = execute(*left);
-            let right = execute(*right);
+            let left = execute(*left)?;
+            let right = execute(*right)?;
             match op {
-                Operator::Add => left + right,
-                Operator::Subtract => left - right,
-                Operator::Multiply => left * right,
-                Operator::Divide => left / right,
+                Operator::Add => Ok(left + right),
+                Operator::Subtract => Ok(left - right),
+                Operator::Multiply => Ok(left * right),
+                Operator::Divide => {
+                    if right == 0.0 {
+                        return Err("Division by zero".to_string());
+                    }
+                    Ok(left / right)
+                }
             }
         }
     }
@@ -163,7 +168,10 @@ fn main() -> io::Result<()> {
     });
     println!("Parsed Operation struct: {:?}", parsed);
 
-    let res = execute(parsed);
+    let res = execute(parsed).unwrap_or_else(|err| {
+        eprintln!("Error: {}", err);
+        process::exit(1)
+    });
     println!("Result: {}", res);
 
     Ok(())
